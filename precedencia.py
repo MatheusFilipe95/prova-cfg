@@ -1,11 +1,9 @@
 """
 A calculadora abaixo possui regras de precedência e associatividade incorretas. Modifique 
 a gramática para consertar tais erros.
-
 Associatividade:
     esquerda: + - * /
     direita: ^
-
 Precedência (da menor para a maior): 
     + -
     * /
@@ -14,24 +12,23 @@ Precedência (da menor para a maior):
 from lark import Lark, Transformer, v_args
 
 
-grammar = Lark(
-    r"""
-start  : expr
+grammar = Lark(r"""
+start  : sum
 
-?expr  : expr "+" term  -> add
-       | term "*" term  -> mul
-       | term
-
-?term  : term "-" term  -> sub
-       | term "/" term  -> div
+?sum   : sum "+" mul  -> add
+       | sum "-" mul  -> sub
+       | mul
+       
+?mul   : mul "*" pow  -> mul
+       | mul "/" pow  -> div
        | pow
-
-?pow   : pow "^" pow    -> pow
+       
+?pow   : atom "^" pow  -> pow
        | atom
-
+       
 ?atom  : NUMBER
-       | "(" expr ")"
-
+       | "(" sum ")"
+       
 NUMBER : /\d+(\.\d+)?/
 %ignore /\s+/
 """
